@@ -20,3 +20,6 @@ sqlc:
 
 test:
 	go test -v ./...
+
+server:
+	go run main.go
