@@ -22,4 +22,4 @@ test:
 	go test -v ./...
 
 server:
-	go run main.go
+	go run ./cmd/bank/main.go
