@@ -4,9 +4,10 @@ import (
 	"context"
 	"log"
 
-	"github.com/BruceCompiler/bank/api"
-	db "github.com/BruceCompiler/bank/db/sqlc"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/BruceCompiler/bank/internal/repository/postgres"
+	"github.com/BruceCompiler/bank/internal/server"
 )
 
 const (
@@ -20,9 +21,9 @@ func main() {
 		log.Fatal("cannot connect db: ", err)
 	}
 
-	store := db.NewStore(pool)
+	store := postgres.NewStore(pool)
 
-	server := api.NewServer(store)
+	server := server.NewHTTPServer(store)
 
 	err = server.Start(serverAddress)
 	if err != nil {

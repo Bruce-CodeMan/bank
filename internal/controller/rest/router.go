@@ -1,0 +1,15 @@
+// Package rest provides REST API routing and handlers
+package rest
+
+import "github.com/gin-gonic/gin"
+
+// RegisterRoutes sets up all API routes for the application.
+func RegisterRoutes(router *gin.Engine, ac *AccountController) {
+	api := router.Group("/api/v1")
+
+	// Account
+	account := api.Group("/account")
+	{
+		account.POST("", ac.CreateAccount)
+	}
+}

@@ -1,19 +1,48 @@
-package db
+package postgres
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"testing"
 
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/require"
+
+	db "github.com/BruceCompiler/bank/db/sqlc"
+	"github.com/BruceCompiler/bank/utils"
 )
 
+const (
+	dbSource = "postgresql://root:secret@localhost:5432/bank?sslmode=disable"
+)
+
+func createRandomAccount(t *testing.T, store *Store) db.Account {
+	arg := db.CreateAccountParams{
+		Owner:    utils.RandomOwner(),
+		PublicID: pgtype.UUID{Bytes: uuid.New(), Valid: true},
+		Balance:  utils.RandomMoney(),
+		Currency: utils.RandomCurrency(),
+	}
+	account, err := store.CreateAccount(context.Background(), arg)
+	require.NoError(t, err)
+	return account
+}
+
 func TestTransferTX(t *testing.T) {
-	store := NewStore(testPool)
+
+	pool, err := pgxpool.New(context.Background(), dbSource)
+	if err != nil {
+		log.Fatal("cannot connect db: ", err)
+	}
+	defer pool.Close()
+	store := NewStore(pool)
 	ctx := context.Background()
 
-	account1 := createRandomAccount(t)
-	account2 := createRandomAccount(t)
+	account1 := createRandomAccount(t, store)
+	account2 := createRandomAccount(t, store)
 
 	fmt.Printf(">> before: account1.Balance: %d, account2.Balance: %d\n",
 		account1.Balance, account2.Balance)
@@ -102,10 +131,10 @@ func TestTransferTX(t *testing.T) {
 	}
 
 	// ---- check final updated balance ----
-	updatedAccount1, err := testQueries.GetAccount(ctx, account1.ID)
+	updatedAccount1, err := store.GetAccount(ctx, account1.ID)
 	require.NoError(t, err)
 
-	updatedAccount2, err := testQueries.GetAccount(ctx, account2.ID)
+	updatedAccount2, err := store.GetAccount(ctx, account2.ID)
 	require.NoError(t, err)
 
 	fmt.Printf(">> after: account1.Balance: %d, account2.Balance: %d\n",
