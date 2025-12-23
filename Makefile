@@ -10,7 +10,7 @@ createdb:
 dropdb:
 	docker exec -it postgres-16 dropdb --force bank
 
-.PHONY: migrateup 
+.PHONY: migrateup
 migrateup:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/bank?sslmode=disable" -verbose up
 
