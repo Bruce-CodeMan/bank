@@ -6,18 +6,16 @@ import (
 	"os"
 	"testing"
 
+	"github.com/BruceCompiler/bank/utils"
 	"github.com/jackc/pgx/v5/pgxpool"
-)
-
-const (
-	dbSource = "postgresql://root:secret@localhost:5432/bank?sslmode=disable"
 )
 
 var testQueries *Queries
 var testPool *pgxpool.Pool
 
 func TestMain(m *testing.M) {
-	pool, err := pgxpool.New(context.Background(), dbSource)
+	config, err := utils.LoadConfig()
+	pool, err := pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect db: ", err)
 	}
