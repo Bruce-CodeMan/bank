@@ -131,10 +131,10 @@ func TestTransferTX(t *testing.T) {
 	}
 
 	// ---- check final updated balance ----
-	updatedAccount1, err := store.GetAccount(ctx, account1.ID)
+	updatedAccount1, err := store.GetAccountById(ctx, account1.ID)
 	require.NoError(t, err)
 
-	updatedAccount2, err := store.GetAccount(ctx, account2.ID)
+	updatedAccount2, err := store.GetAccountById(ctx, account2.ID)
 	require.NoError(t, err)
 
 	fmt.Printf(">> after: account1.Balance: %d, account2.Balance: %d\n",

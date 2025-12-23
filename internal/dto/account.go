@@ -10,3 +10,12 @@ type CreateAccountRequest struct {
 	Owner    string    `json:"owner" binding:"required"`
 	Currency string    `json:"currency" binding:"required,oneof=USD EUR"`
 }
+
+// GetAccountRequest represents the URI parameter used to retrieve an existed account.
+//
+// In a dual-ID architecture, this struct is used to receive a public-facing UUID
+// from the client instead of exposing the internal database ID. It helps to
+// abstract and protect internal implementation details, improving security.
+type GetAccountRequest struct {
+	PublicID string `uri:"public_id" binding:"required"`
+}

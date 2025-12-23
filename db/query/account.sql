@@ -1,7 +1,12 @@
--- name: GetAccount :one
+-- name: GetAccountById :one
 SELECT *
 FROM account
 WHERE id = $1 LIMIT 1;
+
+-- name: GetAccountByUUID :one
+SELECT *
+FROM account
+WHERE public_id = $1 LIMIT 1;
 
 -- name: GetAccountForUpdate :one
 SELECT * 

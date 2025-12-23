@@ -48,3 +48,26 @@ func (ac *AccountController) CreateAccount(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, account)
 }
+
+// GetAccount handles a GET request to retrieve a bank account by its UUID.
+//
+// @Summary 		Get account by UUID
+// @Description		Retrieves account details based on the provided public_id in the URL path.
+// @Tags			account
+// @Param			public_id	path	string true "Account UUID"
+// Success			200			{object}	db.Account
+// Failure			500			{object}	gin.H
+// Router			/api/v1/account/{public_id} [get]
+func (ac *AccountController) GetAccount(ctx *gin.Context) {
+	var req dto.GetAccountRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	account, err := ac.accountService.GetAccountByPublicID(ctx.Request.Context(), req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, account)
+}

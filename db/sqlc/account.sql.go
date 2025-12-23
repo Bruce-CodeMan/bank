@@ -90,14 +90,34 @@ func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
 	return err
 }
 
-const getAccount = `-- name: GetAccount :one
+const getAccountById = `-- name: GetAccountById :one
 SELECT id, public_id, owner, balance, currency, created_at
 FROM account
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
-	row := q.db.QueryRow(ctx, getAccount, id)
+func (q *Queries) GetAccountById(ctx context.Context, id int64) (Account, error) {
+	row := q.db.QueryRow(ctx, getAccountById, id)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.PublicID,
+		&i.Owner,
+		&i.Balance,
+		&i.Currency,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getAccountByUUID = `-- name: GetAccountByUUID :one
+SELECT id, public_id, owner, balance, currency, created_at
+FROM account
+WHERE public_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetAccountByUUID(ctx context.Context, publicID pgtype.UUID) (Account, error) {
+	row := q.db.QueryRow(ctx, getAccountByUUID, publicID)
 	var i Account
 	err := row.Scan(
 		&i.ID,

@@ -43,7 +43,7 @@ func TestCreateAccount(t *testing.T) {
 
 func TestGetAccount(t *testing.T) {
 	account1 := createRandomAccount(t)
-	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
+	account2, err := testQueries.GetAccountById(context.Background(), account1.ID)
 	require.NoError(t, err)
 	require.NotZero(t, account2)
 
@@ -73,7 +73,7 @@ func TestUpdateAccount(t *testing.T) {
 	require.Equal(t, account1.Currency, account2.Currency)
 	require.WithinDuration(t, account1.CreatedAt.Time, account2.CreatedAt.Time, time.Second)
 
-	account3, err := testQueries.GetAccount(context.Background(), account1.ID)
+	account3, err := testQueries.GetAccountById(context.Background(), account1.ID)
 	require.NoError(t, err)
 
 	require.Equal(t, account2.ID, account3.ID)
@@ -90,7 +90,7 @@ func TestDeleteAccount(t *testing.T) {
 	err := testQueries.DeleteAccount(context.Background(), account1.ID)
 	require.NoError(t, err)
 
-	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
+	account2, err := testQueries.GetAccountById(context.Background(), account1.ID)
 	require.Error(t, err)
 	require.ErrorIs(t, err, pgx.ErrNoRows)
 	require.Zero(t, account2)
