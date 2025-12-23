@@ -6,7 +6,7 @@ postgres:
 createdb:
 	docker exec -it postgres-16 createdb --username=root --owner=root bank
 
-.PHONY: dropdb 
+.PHONY: dropdb
 dropdb:
 	docker exec -it postgres-16 dropdb --force bank
 
