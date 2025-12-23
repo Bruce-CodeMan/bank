@@ -8,15 +8,15 @@ import (
 
 	"github.com/BruceCompiler/bank/internal/repository/postgres"
 	"github.com/BruceCompiler/bank/internal/server"
-)
-
-const (
-	dbSource      = "postgresql://root:secret@localhost:5432/bank?sslmode=disable"
-	serverAddress = "0.0.0.0:8080"
+	"github.com/BruceCompiler/bank/utils"
 )
 
 func main() {
-	pool, err := pgxpool.New(context.Background(), dbSource)
+	config, err := utils.LoadConfig()
+	if err != nil {
+		log.Fatal("cannot load configuration: ", err)
+	}
+	pool, err := pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect db: ", err)
 	}
@@ -25,7 +25,7 @@ func main() {
 
 	server := server.NewHTTPServer(store)
 
-	err = server.Start(serverAddress)
+	err = server.Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal("cannot start server: ", err)
 	}

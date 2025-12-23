@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -9,7 +8,6 @@ import (
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
-	fmt.Println("utils")
 }
 
 const alphabet = "qwertyuiopasdfghjklzxcvbnm"
