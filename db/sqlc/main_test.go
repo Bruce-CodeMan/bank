@@ -14,6 +14,7 @@ var testQueries *Queries
 var testPool *pgxpool.Pool
 
 func TestMain(m *testing.M) {
+
 	config, err := utils.LoadConfig()
 	pool, err := pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
