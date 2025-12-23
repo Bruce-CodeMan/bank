@@ -16,11 +16,11 @@ import (
 // AccountService handles business logic for account operations.
 // It uses the Store to interact with the database.
 type AccountService struct {
-	store *postgres.Store
+	store postgres.Store
 }
 
 // NewAccountService creates a new AccountService with the given store.
-func NewAccountService(s *postgres.Store) *AccountService {
+func NewAccountService(s postgres.Store) *AccountService {
 	return &AccountService{store: s}
 }
 

@@ -12,13 +12,13 @@ import (
 // HTTPServer encapsulates the HTTP server and its dependencies.
 // It manages the Gin engine and database store.
 type HTTPServer struct {
-	store  *postgres.Store
+	store  postgres.Store
 	engine *gin.Engine
 }
 
 // NewHTTPServer creates a new HTTPServer with the given store.
 // It initializes the Gin engine and sets up all routes.
-func NewHTTPServer(store *postgres.Store) *HTTPServer {
+func NewHTTPServer(store postgres.Store) *HTTPServer {
 	server := &HTTPServer{
 		store:  store,
 		engine: gin.Default(),

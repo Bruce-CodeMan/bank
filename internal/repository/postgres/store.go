@@ -9,22 +9,32 @@ import (
 	db "github.com/BruceCompiler/bank/db/sqlc"
 )
 
-// Store provides all functions to execute db queries and transaction
-type Store struct {
+// Store provides all function to execute db quries and transaction.
+type Store interface {
+	db.Querier
+	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+}
+
+// Store provides all functions to execute Postgres DB queries and transaction
+type PGStore struct {
 	pool *pgxpool.Pool
 	*db.Queries
 }
 
 // NewStore creates a new Store
-func NewStore(pool *pgxpool.Pool) *Store {
-	return &Store{
+func NewPGStore(pool *pgxpool.Pool) *PGStore {
+	return &PGStore{
 		pool:    pool,
 		Queries: db.New(pool), // New接收的是DBTX, 而pool实现了DBTX的 Exec/Query/QueryRow
 	}
 }
 
+func NewStore(pool *pgxpool.Pool) Store {
+	return NewPGStore(pool)
+}
+
 // execTx executes a function within a database transaction
-func (s *Store) execTx(ctx context.Context, fn func(*db.Queries) error) error {
+func (s *PGStore) execTx(ctx context.Context, fn func(*db.Queries) error) error {
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return err
@@ -57,7 +67,7 @@ type TransferTxResult struct {
 
 // TransferTx performs a money transfer from one account to the other.
 // It creates a transfer record, and account entries, and update account's balance with a single database transaction
-func (s *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
+func (s *PGStore) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 
 	err := s.execTx(ctx, func(q *db.Queries) error {
@@ -121,7 +131,7 @@ func (s *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferT
 	return result, err
 }
 
-func (s *Store) addMoney(ctx context.Context, q *db.Queries, id int64, amount int64) (db.Account, error) {
+func (s *PGStore) addMoney(ctx context.Context, q *db.Queries, id int64, amount int64) (db.Account, error) {
 	return q.AddAccountBalance(ctx, db.AddAccountBalanceParams{
 		ID:     id,
 		Amount: amount,

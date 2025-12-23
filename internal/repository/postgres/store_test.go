@@ -19,7 +19,7 @@ const (
 	dbSource = "postgresql://root:secret@localhost:5432/bank?sslmode=disable"
 )
 
-func createRandomAccount(t *testing.T, store *Store) db.Account {
+func createRandomAccount(t *testing.T, store Store) db.Account {
 	arg := db.CreateAccountParams{
 		Owner:    utils.RandomOwner(),
 		PublicID: pgtype.UUID{Bytes: uuid.New(), Valid: true},
