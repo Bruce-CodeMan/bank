@@ -71,3 +71,29 @@ func (ac *AccountController) GetAccount(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, account)
 }
+
+// ListAccount handles a GET request to retrieve a list of bank accounts with pagination.
+//
+// @Summary			Get accounts by page_id and page_size
+// @Description		Retrieves accounts details based on the provided page_id and page_size
+// @Tags			account
+// @Accept 			json
+// @Produce			json
+// @Param			page_id		query	int		true	"Page number (starting from 1)"
+// @Param			page_size	query 	int		true	"Number of items per page(5-10)"
+// @Success			200		{object}	Response{data=[]db.Account} "List of accounts"
+// @Failure			500		{object}	Response "Invalid request parameters"
+// @Router			/api/v1/account	[get]
+func (ac *AccountController) ListAccount(ctx *gin.Context) {
+	var req dto.ListAccountRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	accounts, err := ac.accountService.ListAccount(ctx.Request.Context(), req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, accounts)
+}

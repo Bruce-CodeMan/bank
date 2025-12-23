@@ -71,3 +71,24 @@ func (s *AccountService) GetAccountByPublicID(ctx context.Context, req dto.GetAc
 		Valid: true,
 	})
 }
+
+// ListAccount retrieves a paginated list of bank accounts from the database.
+//
+// It calculates the SQL offset and limit based on the provided page ID and page size
+// and then queries the database for the corresponding account records.
+//
+// Parameters:
+//   - ctx: Standard context for request-scoped values and cancellation.
+//   - req: A listAccountRequest DTO containing page_id and page_size.
+//
+// Returns:
+//   - []db.Account: A slice of account records for the requested page.
+//   - error: An error if the database query fails or parameter are invalid.
+func (s *AccountService) ListAccount(ctx context.Context, req dto.ListAccountRequest) ([]db.Account, error) {
+	arg := db.ListAccountsParams{
+		Limit:  int32(req.PageSize),
+		Offset: int32(req.PageID-1) * int32(req.PageSize),
+	}
+	return s.store.ListAccounts(ctx, arg)
+
+}

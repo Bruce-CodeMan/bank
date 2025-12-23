@@ -12,5 +12,6 @@ func RegisterRoutes(router *gin.Engine, ac *AccountController) {
 	{
 		account.POST("", ac.CreateAccount)
 		account.GET("/:public_id", ac.GetAccount)
+		account.GET("", ac.ListAccount)
 	}
 }
