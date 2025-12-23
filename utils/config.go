@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"log"
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -18,7 +18,6 @@ type Config struct {
 
 func getProjectRootPath() string {
 	_, b, _, _ := runtime.Caller(0)
-	log.Printf("b: %s\n", b)
 	basePath := filepath.Dir(b)          // /.../bank/utils
 	return filepath.Join(basePath, "..") // back to /.../bank
 }
@@ -26,12 +25,18 @@ func getProjectRootPath() string {
 // LoadConfig reads configuration from file or environment variables.
 func LoadConfig() (config Config, err error) {
 	rootPath := getProjectRootPath()
-	fmt.Printf("rootPath: %s\n", rootPath)
 
-	viper.SetConfigName("app")
-	viper.SetConfigType("env") // json, xml, yaml and so on
-	viper.AddConfigPath(rootPath)
+	// Get the Env name
+	env := os.Getenv("APP_ENV")
+	var fileName string
+	if env == "" {
+		fileName = "app.env"
+	} else {
+		fileName = fmt.Sprintf("app.%s.env", env)
+	}
 
+	configPath := filepath.Join(rootPath, fileName)
+	viper.SetConfigFile(configPath)
 	viper.AutomaticEnv()
 
 	err = viper.ReadInConfig()
