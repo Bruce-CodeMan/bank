@@ -4,7 +4,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/BruceCompiler/bank/internal/controller/rest"
+	"github.com/BruceCompiler/bank/internal/handler/rest"
 	"github.com/BruceCompiler/bank/internal/repository/postgres"
 	"github.com/BruceCompiler/bank/internal/service"
 )
