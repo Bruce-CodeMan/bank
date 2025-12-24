@@ -29,3 +29,7 @@ test:
 .PHONY: server
 server:
 	go run ./cmd/bank/main.go
+
+.PHONY: mock
+mock:
+	mockgen -destination=internal/mocks/store.go -package=mocks github.com/BruceCompiler/bank/internal/repository/postgres Store
