@@ -4,6 +4,7 @@
 package rest
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -61,11 +62,15 @@ func (ac *AccountController) CreateAccount(ctx *gin.Context) {
 func (ac *AccountController) GetAccount(ctx *gin.Context) {
 	var req dto.GetAccountRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	account, err := ac.accountService.GetAccountByPublicID(ctx.Request.Context(), req)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

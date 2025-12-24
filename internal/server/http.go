@@ -41,3 +41,7 @@ func (s *HTTPServer) setupRoutes() {
 func (s *HTTPServer) Start(address string) error {
 	return s.engine.Run(address)
 }
+
+func (s *HTTPServer) Router() *gin.Engine {
+	return s.engine
+}

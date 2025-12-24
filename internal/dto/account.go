@@ -20,7 +20,7 @@ type CreateAccountRequest struct {
 // from the client instead of exposing the internal database ID. It helps to
 // abstract and protect internal implementation details, improving security.
 type GetAccountRequest struct {
-	PublicID string `uri:"public_id" binding:"required"`
+	PublicID string `uri:"public_id" binding:"required,uuid"`
 }
 
 // ListAccountRequest represents the query paramaters used for paginated account listing.
