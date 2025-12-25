@@ -11,7 +11,7 @@ import "github.com/google/uuid"
 type CreateAccountRequest struct {
 	PublicID uuid.UUID `json:"public_id" binding:"required"`
 	Owner    string    `json:"owner" binding:"required"`
-	Currency string    `json:"currency" binding:"required,oneof=USD EUR"`
+	Currency string    `json:"currency" binding:"required,currency"`
 }
 
 // GetAccountRequest represents the URI parameter used to retrieve an existed account.

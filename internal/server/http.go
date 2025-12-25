@@ -3,10 +3,13 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/BruceCompiler/bank/internal/handler/rest"
 	"github.com/BruceCompiler/bank/internal/repository/postgres"
 	"github.com/BruceCompiler/bank/internal/service"
+	"github.com/BruceCompiler/bank/internal/validators"
 )
 
 // HTTPServer encapsulates the HTTP server and its dependencies.
@@ -23,6 +26,11 @@ func NewHTTPServer(store postgres.Store) *HTTPServer {
 		store:  store,
 		engine: gin.Default(),
 	}
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("currency", validators.ValidCurrency)
+	}
+
 	server.setupRoutes()
 	return server
 }
@@ -35,7 +43,6 @@ func (s *HTTPServer) setupRoutes() {
 	transferService := service.NewTransferService(s.store)
 	transferController := rest.NewTransferController(transferService)
 	rest.RegisterRoutes(s.engine, accountController, transferController)
-
 }
 
 // Start begins listening for HTTP requests on the specified address.
