@@ -1,4 +1,4 @@
-// Package dto contains data transfer object (DTOs) for API requests and responses
+// Package dto contains data transfer object (DTOs) for account API requests and responses
 package dto
 
 import "github.com/google/uuid"

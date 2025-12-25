@@ -4,7 +4,7 @@ package rest
 import "github.com/gin-gonic/gin"
 
 // RegisterRoutes sets up all API routes for the application.
-func RegisterRoutes(router *gin.Engine, ac *AccountController) {
+func RegisterRoutes(router *gin.Engine, ac *AccountController, tc *TransferController) {
 	api := router.Group("/api/v1")
 
 	// Account
@@ -13,5 +13,11 @@ func RegisterRoutes(router *gin.Engine, ac *AccountController) {
 		account.POST("", ac.CreateAccount)
 		account.GET("/:public_id", ac.GetAccount)
 		account.GET("", ac.ListAccount)
+	}
+
+	// Transfer
+	transfer := api.Group("/transfer")
+	{
+		transfer.POST("", tc.CreateTransfer)
 	}
 }

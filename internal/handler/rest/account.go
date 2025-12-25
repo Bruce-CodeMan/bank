@@ -1,5 +1,5 @@
 // Package rest provides REST API handlers for the bank application.
-// It contains controllers taht handle HTTP requests and delegate
+// It contains controllers that handle HTTP requests and delegate
 // business logic to the service layer.
 package rest
 

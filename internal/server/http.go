@@ -32,7 +32,9 @@ func NewHTTPServer(store postgres.Store) *HTTPServer {
 func (s *HTTPServer) setupRoutes() {
 	accountService := service.NewAccountService(s.store)
 	accountController := rest.NewAccountController(accountService)
-	rest.RegisterRoutes(s.engine, accountController)
+	transferService := service.NewTransferService(s.store)
+	transferController := rest.NewTransferController(transferService)
+	rest.RegisterRoutes(s.engine, accountController, transferController)
 
 }
 
