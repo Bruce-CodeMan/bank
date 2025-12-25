@@ -3,11 +3,13 @@ package db
 import (
 	"context"
 	"testing"
+	"time"
 
-	"github.com/BruceCompiler/bank/utils"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
+
+	"github.com/BruceCompiler/bank/utils"
 )
 
 func createRandomUser(t *testing.T) User {
@@ -22,20 +24,37 @@ func createRandomUser(t *testing.T) User {
 		Email:          utils.RandomEmail(),
 	}
 
-	row, err := testQueries.CreateUser(context.Background(), arg)
+	user, err := testQueries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
-	require.NotEmpty(t, row)
+	require.NotEmpty(t, user)
 
-	user := User{
-		ID:                row.ID,
-		PublicID:          row.PublicID,
-		Username:          row.Username,
-		HashedPassword:    row.HashedPassword,
-		FullName:          row.FullName,
-		Email:             row.Email,
-		PasswordChangedAt: row.PasswordChangedAt,
-		CreatedAt:         row.CreatedAt,
-	}
+	require.Equal(t, arg.Username, user.Username)
+	require.Equal(t, arg.HashedPassword, user.HashedPassword)
+	require.Equal(t, arg.FullName, user.FullName)
+	require.Equal(t, arg.Email, user.Email)
+
+	require.NotZero(t, user.CreatedAt)
+	require.True(t, user.PasswordChangedAt.Time.IsZero())
 
 	return user
+}
+
+func TestCreateUser(t *testing.T) {
+	createRandomUser(t)
+}
+
+func TestGetUser(t *testing.T) {
+	user1 := createRandomUser(t)
+	user2, err := testQueries.GetUserByPublicID(context.Background(), user1.PublicID)
+	require.NoError(t, err)
+	require.NotEmpty(t, user2)
+
+	require.Equal(t, user1.Username, user2.Username)
+	require.Equal(t, user1.HashedPassword, user2.HashedPassword)
+	require.Equal(t, user1.FullName, user2.FullName)
+	require.Equal(t, user1.Email, user2.Email)
+
+	require.WithinDuration(t, user1.PasswordChangedAt.Time, user2.PasswordChangedAt.Time, time.Second)
+	require.WithinDuration(t, user1.CreatedAt.Time, user2.CreatedAt.Time, time.Second)
+
 }
