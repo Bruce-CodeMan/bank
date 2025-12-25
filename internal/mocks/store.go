@@ -59,10 +59,10 @@ func (mr *MockStoreMockRecorder) AddAccountBalance(ctx, arg any) *gomock.Call {
 }
 
 // CreateAccount mocks base method.
-func (m *MockStore) CreateAccount(ctx context.Context, arg db.CreateAccountParams) (db.Account, error) {
+func (m *MockStore) CreateAccount(ctx context.Context, arg db.CreateAccountParams) (db.CreateAccountRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAccount", ctx, arg)
-	ret0, _ := ret[0].(db.Account)
+	ret0, _ := ret[0].(db.CreateAccountRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -101,6 +101,21 @@ func (m *MockStore) CreateTransfer(ctx context.Context, arg db.CreateTransferPar
 func (mr *MockStoreMockRecorder) CreateTransfer(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTransfer", reflect.TypeOf((*MockStore)(nil).CreateTransfer), ctx, arg)
+}
+
+// CreateUser mocks base method.
+func (m *MockStore) CreateUser(ctx context.Context, arg db.CreateUserParams) (db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUser", ctx, arg)
+	ret0, _ := ret[0].(db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateUser indicates an expected call of CreateUser.
+func (mr *MockStoreMockRecorder) CreateUser(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockStore)(nil).CreateUser), ctx, arg)
 }
 
 // DeleteAccount mocks base method.
@@ -190,6 +205,21 @@ func (m *MockStore) GetTransfer(ctx context.Context, id int64) (db.Transfer, err
 func (mr *MockStoreMockRecorder) GetTransfer(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransfer", reflect.TypeOf((*MockStore)(nil).GetTransfer), ctx, id)
+}
+
+// GetUserByPublicID mocks base method.
+func (m *MockStore) GetUserByPublicID(ctx context.Context, publicID pgtype.UUID) (db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByPublicID", ctx, publicID)
+	ret0, _ := ret[0].(db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByPublicID indicates an expected call of GetUserByPublicID.
+func (mr *MockStoreMockRecorder) GetUserByPublicID(ctx, publicID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByPublicID", reflect.TypeOf((*MockStore)(nil).GetUserByPublicID), ctx, publicID)
 }
 
 // ListAccounts mocks base method.

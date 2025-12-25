@@ -39,16 +39,15 @@ DELETE FROM account WHERE id = $1;
 -- name: CreateAccount :one
 INSERT INTO account (
     public_id,
-    owner,
     balance,
-    currency
+    currency,
+    primary_user_id
 ) VALUES (
     $1, $2, $3, $4
 )
 RETURNING
     id,
     public_id,
-    owner,
     balance,
     currency,
     created_at;

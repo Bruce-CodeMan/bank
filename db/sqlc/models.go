@@ -9,11 +9,19 @@ import (
 )
 
 type Account struct {
+	ID            int64              `json:"id"`
+	PublicID      pgtype.UUID        `json:"public_id"`
+	Balance       int64              `json:"balance"`
+	Currency      string             `json:"currency"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	PrimaryUserID int64              `json:"primary_user_id"`
+}
+
+type AccountUser struct {
 	ID        int64              `json:"id"`
-	PublicID  pgtype.UUID        `json:"public_id"`
-	Owner     string             `json:"owner"`
-	Balance   int64              `json:"balance"`
-	Currency  string             `json:"currency"`
+	AccountID int64              `json:"account_id"`
+	UserID    int64              `json:"user_id"`
+	Role      string             `json:"role"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
@@ -31,4 +39,15 @@ type Transfer struct {
 	ToAccountID   int64              `json:"to_account_id"`
 	Amount        int64              `json:"amount"`
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+}
+
+type User struct {
+	ID                int64              `json:"id"`
+	PublicID          pgtype.UUID        `json:"public_id"`
+	Username          string             `json:"username"`
+	HashedPassword    string             `json:"hashed_password"`
+	FullName          string             `json:"full_name"`
+	Email             string             `json:"email"`
+	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
 }

@@ -14,25 +14,34 @@ import (
 )
 
 func createRandomAccount(t *testing.T) Account {
+	user := createRandomUser(t)
 	arg := CreateAccountParams{
-		Owner: utils.RandomOwner(),
 		PublicID: pgtype.UUID{
 			Bytes: uuid.New(),
 			Valid: true,
 		},
-		Balance:  utils.RandomMoney(),
-		Currency: utils.RandomCurrency(),
+		Balance:       utils.RandomMoney(),
+		Currency:      utils.RandomCurrency(),
+		PrimaryUserID: user.ID,
 	}
-	account, err := testQueries.CreateAccount(context.Background(), arg)
+	row, err := testQueries.CreateAccount(context.Background(), arg)
 	require.NoError(t, err)
-	require.NotEmpty(t, account)
+	require.NotEmpty(t, row)
 
-	require.Equal(t, arg.Owner, account.Owner)
-	require.Equal(t, arg.PublicID, account.PublicID)
-	require.Equal(t, arg.Balance, account.Balance)
-	require.Equal(t, arg.Currency, account.Currency)
+	require.Equal(t, arg.PublicID, row.PublicID)
+	require.Equal(t, arg.Balance, row.Balance)
+	require.Equal(t, arg.Currency, row.Currency)
 
-	require.NotZero(t, account.CreatedAt)
+	require.NotZero(t, row.CreatedAt)
+
+	account := Account{
+		ID:            row.ID,
+		PublicID:      row.PublicID,
+		Balance:       row.Balance,
+		Currency:      row.Currency,
+		CreatedAt:     row.CreatedAt,
+		PrimaryUserID: user.ID,
+	}
 
 	return account
 }
@@ -48,7 +57,6 @@ func TestGetAccount(t *testing.T) {
 	require.NotZero(t, account2)
 
 	require.Equal(t, account1.ID, account2.ID)
-	require.Equal(t, account1.Owner, account2.Owner)
 	require.Equal(t, account1.Balance, account2.Balance)
 	require.Equal(t, account1.Currency, account2.Currency)
 
@@ -78,7 +86,6 @@ func TestUpdateAccount(t *testing.T) {
 
 	require.Equal(t, account2.ID, account3.ID)
 	require.Equal(t, account2.PublicID, account3.PublicID)
-	require.Equal(t, account2.Owner, account3.Owner)
 	require.Equal(t, account2.Balance, account2.Balance)
 	require.Equal(t, account2.Currency, account3.Currency)
 	require.Equal(t, account2.CreatedAt, account3.CreatedAt)

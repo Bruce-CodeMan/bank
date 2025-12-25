@@ -118,7 +118,6 @@ func randomAccount() db.Account {
 			Bytes: uuid.New(),
 			Valid: true,
 		},
-		Owner:    utils.RandomOwner(),
 		Currency: utils.RandomCurrency(),
 		Balance:  utils.RandomMoney(),
 	}

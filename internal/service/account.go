@@ -37,8 +37,7 @@ func NewAccountService(s postgres.Store) *AccountService {
 //   - db.Account: The created account object.
 //   - error: An error if the creation fails.
 func (s *AccountService) CreateAccount(ctx context.Context, req dto.CreateAccountRequest) (db.Account, error) {
-	return s.store.CreateAccount(ctx, db.CreateAccountParams{
-		Owner:    req.Owner,
+	row, err := s.store.CreateAccount(ctx, db.CreateAccountParams{
 		Currency: req.Currency,
 		PublicID: pgtype.UUID{
 			Bytes: req.PublicID,
@@ -46,6 +45,20 @@ func (s *AccountService) CreateAccount(ctx context.Context, req dto.CreateAccoun
 		},
 		Balance: 0,
 	})
+	if err != nil {
+		return db.Account{}, err
+	}
+
+	account := db.Account{
+		ID:            row.ID,
+		PublicID:      row.PublicID,
+		Balance:       row.Balance,
+		Currency:      row.Currency,
+		CreatedAt:     row.CreatedAt,
+		PrimaryUserID: 0, // 或者后续补
+	}
+
+	return account, nil
 }
 
 // GetAccount retrieves a bank account from the database using the provided UUID.
