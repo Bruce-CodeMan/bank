@@ -8,7 +8,12 @@ INSERT INTO "user" (
 ) VALUES (
     $1, $2, $3, $4, $5
 ) 
-RETURNING *;
+RETURNING 
+    id,
+    public_id,
+    username,
+    full_name,
+    email;
 
 -- name: GetUserByPublicID :one
 SELECT * FROM "user"

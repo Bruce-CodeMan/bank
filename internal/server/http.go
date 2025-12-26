@@ -42,7 +42,9 @@ func (s *HTTPServer) setupRoutes() {
 	accountController := rest.NewAccountController(accountService)
 	transferService := service.NewTransferService(s.store)
 	transferController := rest.NewTransferController(transferService)
-	rest.RegisterRoutes(s.engine, accountController, transferController)
+	userService := service.NewUserService(s.store)
+	userController := rest.NewUserController(userService)
+	rest.RegisterRoutes(s.engine, accountController, transferController, userController)
 }
 
 // Start begins listening for HTTP requests on the specified address.
