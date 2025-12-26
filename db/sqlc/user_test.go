@@ -13,13 +13,14 @@ import (
 )
 
 func createRandomUser(t *testing.T) User {
+	hashedPassword, err := utils.HashPassword(utils.RandomString(6))
 	arg := CreateUserParams{
 		PublicID: pgtype.UUID{
 			Bytes: uuid.New(),
 			Valid: true,
 		},
 		Username:       utils.RandomOwner(),
-		HashedPassword: utils.RandomString(6),
+		HashedPassword: hashedPassword,
 		FullName:       utils.RandomString(6),
 		Email:          utils.RandomEmail(),
 	}
