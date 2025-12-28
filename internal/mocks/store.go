@@ -207,6 +207,21 @@ func (mr *MockStoreMockRecorder) GetTransfer(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransfer", reflect.TypeOf((*MockStore)(nil).GetTransfer), ctx, id)
 }
 
+// GetUserByName mocks base method.
+func (m *MockStore) GetUserByName(ctx context.Context, username string) (db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByName", ctx, username)
+	ret0, _ := ret[0].(db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByName indicates an expected call of GetUserByName.
+func (mr *MockStoreMockRecorder) GetUserByName(ctx, username any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByName", reflect.TypeOf((*MockStore)(nil).GetUserByName), ctx, username)
+}
+
 // GetUserByPublicID mocks base method.
 func (m *MockStore) GetUserByPublicID(ctx context.Context, publicID pgtype.UUID) (db.User, error) {
 	m.ctrl.T.Helper()

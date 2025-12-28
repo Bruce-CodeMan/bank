@@ -29,5 +29,6 @@ func RegisterRoutes(router *gin.Engine,
 	user := api.Group("/user")
 	{
 		user.POST("", uc.CreateUser)
+		user.POST("/login", uc.Login)
 	}
 }

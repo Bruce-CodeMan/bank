@@ -2,6 +2,8 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
@@ -9,22 +11,32 @@ import (
 	"github.com/BruceCompiler/bank/internal/handler/rest"
 	"github.com/BruceCompiler/bank/internal/repository/postgres"
 	"github.com/BruceCompiler/bank/internal/service"
+	"github.com/BruceCompiler/bank/internal/token"
 	"github.com/BruceCompiler/bank/internal/validators"
+	"github.com/BruceCompiler/bank/utils"
 )
 
 // HTTPServer encapsulates the HTTP server and its dependencies.
 // It manages the Gin engine and database store.
 type HTTPServer struct {
-	store  postgres.Store
-	engine *gin.Engine
+	config     utils.Config
+	store      postgres.Store
+	tokenMaker token.Maker
+	engine     *gin.Engine
 }
 
 // NewHTTPServer creates a new HTTPServer with the given store.
 // It initializes the Gin engine and sets up all routes.
-func NewHTTPServer(store postgres.Store) *HTTPServer {
+func NewHTTPServer(config utils.Config, store postgres.Store) (*HTTPServer, error) {
+	tokenMaker, err := token.NewJWTMaker(config.TokenSynmmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	}
 	server := &HTTPServer{
-		store:  store,
-		engine: gin.Default(),
+		config:     config,
+		tokenMaker: tokenMaker,
+		store:      store,
+		engine:     gin.Default(),
 	}
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -32,7 +44,7 @@ func NewHTTPServer(store postgres.Store) *HTTPServer {
 	}
 
 	server.setupRoutes()
-	return server
+	return server, nil
 }
 
 // setupRoutes configures all API routes.
@@ -42,7 +54,7 @@ func (s *HTTPServer) setupRoutes() {
 	accountController := rest.NewAccountController(accountService)
 	transferService := service.NewTransferService(s.store)
 	transferController := rest.NewTransferController(transferService)
-	userService := service.NewUserService(s.store)
+	userService := service.NewUserService(s.store, s.tokenMaker, s.config)
 	userController := rest.NewUserController(userService)
 	rest.RegisterRoutes(s.engine, accountController, transferController, userController)
 }

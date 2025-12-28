@@ -24,7 +24,10 @@ func main() {
 
 	store := postgres.NewStore(pool)
 
-	server := server.NewHTTPServer(store)
+	server, err := server.NewHTTPServer(config, store)
+	if err != nil {
+		log.Fatal("cannot create server: ", err)
+	}
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {

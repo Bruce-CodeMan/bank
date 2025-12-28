@@ -22,6 +22,7 @@ type Querier interface {
 	GetAccountForUpdate(ctx context.Context, id int64) (Account, error)
 	GetEntry(ctx context.Context, id int64) (Entry, error)
 	GetTransfer(ctx context.Context, id int64) (Transfer, error)
+	GetUserByName(ctx context.Context, username string) (User, error)
 	GetUserByPublicID(ctx context.Context, publicID pgtype.UUID) (User, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)

@@ -8,6 +8,8 @@ import (
 	"github.com/google/uuid"
 )
 
+type TokenType byte
+
 var (
 	ErrInvalidToken = errors.New("token is invalid")
 )

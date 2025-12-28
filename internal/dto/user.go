@@ -15,3 +15,13 @@ type CreateUserResponse struct {
 	FullName string `json:"full_name"`
 	Email    string `json:"email"`
 }
+
+type LoginUserRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginUserResponse struct {
+	AccessToken string             `json:"access_token"`
+	User        CreateUserResponse `json:"user"`
+}

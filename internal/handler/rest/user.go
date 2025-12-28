@@ -60,3 +60,26 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, rsp)
 }
+
+func (uc *UserController) Login(ctx *gin.Context) {
+	var req dto.LoginUserRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := uc.userService.Login(ctx.Request.Context(), req)
+	if err != nil {
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			switch pgErr.Code {
+			case "23505":
+				ctx.JSON(http.StatusForbidden, gin.H{"error": "username or password is not correct"})
+				return
+			}
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user)
+}

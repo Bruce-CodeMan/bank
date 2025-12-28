@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -9,18 +10,25 @@ import (
 	db "github.com/BruceCompiler/bank/db/sqlc"
 	"github.com/BruceCompiler/bank/internal/dto"
 	"github.com/BruceCompiler/bank/internal/repository/postgres"
+	"github.com/BruceCompiler/bank/internal/token"
 	"github.com/BruceCompiler/bank/utils"
 )
 
 // UserService handles the business logic for user operations.
 // It uses the Store to interact with the database.
 type UserService struct {
-	store postgres.Store
+	store      postgres.Store
+	tokenMaker token.Maker
+	config     utils.Config
 }
 
 // NewUserService creates a new UserService with the given store.
-func NewUserService(s postgres.Store) *UserService {
-	return &UserService{store: s}
+func NewUserService(s postgres.Store, tokenMaker token.Maker, config utils.Config) *UserService {
+	return &UserService{
+		store:      s,
+		tokenMaker: tokenMaker,
+		config:     config,
+	}
 }
 
 // CreateUser creates a new user with the given details
@@ -49,4 +57,39 @@ func (u *UserService) CreateUser(ctx context.Context, req dto.CreateUserRequest)
 		FullName:       req.FullName,
 		Email:          req.Email,
 	})
+}
+
+// Login
+//
+// Parameters:
+//   - ctx: Standard context for request-scoped values and cancellation
+//   - req: A LoginUserRequest DTO caontains Username and Password
+func (u *UserService) Login(ctx context.Context, req dto.LoginUserRequest) (dto.LoginUserResponse, error) {
+	user, err := u.store.GetUserByName(ctx, req.Username)
+	if err != nil {
+		return dto.LoginUserResponse{}, err
+	}
+
+	err = utils.CheckPassword(req.Password, user.HashedPassword)
+	if err != nil {
+		return dto.LoginUserResponse{}, err
+	}
+
+	accessToken, err := u.tokenMaker.CreateToken(
+		user.Username,
+		u.config.AccessTokenDuration,
+	)
+	if err != nil {
+		return dto.LoginUserResponse{}, err
+	}
+	rsp := dto.LoginUserResponse{
+		AccessToken: accessToken,
+		User: dto.CreateUserResponse{
+			ID:       strconv.FormatInt(user.ID, 10),
+			Username: user.Username,
+			Email:    user.Email,
+			FullName: user.FullName,
+		},
+	}
+	return rsp, nil
 }

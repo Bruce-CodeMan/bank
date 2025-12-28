@@ -18,3 +18,7 @@ RETURNING
 -- name: GetUserByPublicID :one
 SELECT * FROM "user"
 WHERE public_id = $1 LIMIT 1;
+
+-- name: GetUserByName :one
+SELECT * FROM "user"
+WHERE username = $1 LIMIT 1;
