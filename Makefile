@@ -8,6 +8,7 @@ DB_SSL		?= disable
 
 POSTGRES_IMAGE	?= postgres:16-alpine
 POSTGRES_CONTAINER ?= postgres-16
+NETWORK ?= bank-network
 
 MIGRATE_PATH ?= db/migration
 
@@ -18,6 +19,7 @@ postgres:
 	docker run -d \
 		--name $(POSTGRES_CONTAINER) \
 		-p $(DB_PORT):5432 \
+		--network $(NETWORK) \
 		-e POSTGRES_USER=$(DB_USER) \
 		-e POSTGRES_PASSWORD=$(DB_PASS) \
 		$(POSTGRES_IMAGE)
