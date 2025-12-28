@@ -1,15 +1,25 @@
 // Package rest provides REST API routing and handlers
 package rest
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/BruceCompiler/bank/internal/token"
+	"github.com/gin-gonic/gin"
+)
 
 // RegisterRoutes sets up all API routes for the application.
 func RegisterRoutes(router *gin.Engine,
+	tokenMaker token.Maker,
 	ac *AccountController,
 	tc *TransferController,
 	uc *UserController,
 ) {
 	api := router.Group("/api/v1")
+	// User
+	user := api.Group("/user")
+	{
+		user.POST("", uc.CreateUser)
+		user.POST("/login", uc.Login)
+	}
 
 	// Account
 	account := api.Group("/account")
@@ -25,10 +35,4 @@ func RegisterRoutes(router *gin.Engine,
 		transfer.POST("", tc.CreateTransfer)
 	}
 
-	// User
-	user := api.Group("/user")
-	{
-		user.POST("", uc.CreateUser)
-		user.POST("/login", uc.Login)
-	}
 }

@@ -56,7 +56,7 @@ func (s *HTTPServer) setupRoutes() {
 	transferController := rest.NewTransferController(transferService)
 	userService := service.NewUserService(s.store, s.tokenMaker, s.config)
 	userController := rest.NewUserController(userService)
-	rest.RegisterRoutes(s.engine, accountController, transferController, userController)
+	rest.RegisterRoutes(s.engine, s.tokenMaker, accountController, transferController, userController)
 }
 
 // Start begins listening for HTTP requests on the specified address.
@@ -67,4 +67,8 @@ func (s *HTTPServer) Start(address string) error {
 
 func (s *HTTPServer) Router() *gin.Engine {
 	return s.engine
+}
+
+func (s *HTTPServer) TokenMaker() token.Maker {
+	return s.tokenMaker
 }

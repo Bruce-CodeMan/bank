@@ -38,7 +38,7 @@ func NewAccountService(s postgres.Store) *AccountService {
 //   - error: An error if the creation fails.
 func (s *AccountService) CreateAccount(ctx context.Context, req dto.CreateAccountRequest) (db.Account, error) {
 	row, err := s.store.CreateAccount(ctx, db.CreateAccountParams{
-		Currency: req.Currency,
+		Currency: req.Owner,
 		PublicID: pgtype.UUID{
 			Bytes: req.PublicID,
 			Valid: true,

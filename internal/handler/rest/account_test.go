@@ -16,6 +16,7 @@ import (
 
 	db "github.com/BruceCompiler/bank/db/sqlc"
 	"github.com/BruceCompiler/bank/internal/mocks"
+	"github.com/BruceCompiler/bank/internal/server"
 	"github.com/BruceCompiler/bank/utils"
 )
 
@@ -92,7 +93,7 @@ func TestGetAccountAPI(t *testing.T) {
 			tc.buildStubs(store)
 
 			// start test server and send request
-			srv := newTestServer(t, store)
+			srv := server.NewTestServer(t, store)
 
 			recorder := httptest.NewRecorder()
 
