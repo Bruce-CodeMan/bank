@@ -17,9 +17,6 @@ jobs:
     name: Build image
     runs-on: ubuntu-latest
 
-    env:
-      APP_ENV: ci
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
