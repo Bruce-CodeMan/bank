@@ -32,7 +32,7 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v2
     
     - name: Load secrets and save to app.env
-      run: | 
+      run: |
         aws secretsmanager get-secret-value \
           --secret-id bank \
           --region us-east-1 \
