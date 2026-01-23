@@ -33,7 +33,7 @@ jobs:
     
     - name: Load secrets and save to app.env
       run: | 
-          aws secretsmanager get-secret-value \
+        aws secretsmanager get-secret-value \
           --secret-id bank \
           --region us-east-1 \
           --query SecretString \ 
