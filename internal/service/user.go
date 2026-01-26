@@ -75,13 +75,38 @@ func (u *UserService) Login(ctx context.Context, req dto.LoginUserRequest) (dto.
 		return dto.LoginUserResponse{}, err
 	}
 
-	accessToken, err := u.tokenMaker.CreateToken(
+	accessToken, accessPayload, err := u.tokenMaker.CreateToken(
 		user.Username,
 		u.config.AccessTokenDuration,
 	)
 	if err != nil {
 		return dto.LoginUserResponse{}, err
 	}
+
+	refreshToken, refreshPayload, err := u.tokenMaker.CreateToken(
+		user.Username,
+		u.config.RefreshTokenDuration,
+	)
+	if err != nil {
+		return dto.LoginUserResponse{}, err
+	}
+
+	_, err = u.store.CreateSession(ctx, db.CreateSessionParams{
+		PublicID:     user.PublicID,
+		Username:     user.Username,
+		RefreshToken: refreshToken,
+		UserAgent:    "",
+		ClientIp:     "",
+		IsBlocked:    false,
+		ExpiresAt: pgtype.Timestamptz{
+			Time:  refreshPayload.ExpiresAt.Time,
+			Valid: true,
+		},
+	})
+	if err != nil {
+		return dto.LoginUserResponse{}, err
+	}
+
 	rsp := dto.LoginUserResponse{
 		AccessToken: accessToken,
 		User: dto.CreateUserResponse{
@@ -90,6 +115,9 @@ func (u *UserService) Login(ctx context.Context, req dto.LoginUserRequest) (dto.
 			Email:    user.Email,
 			FullName: user.FullName,
 		},
+		AccessTokenExpiresAt:  accessPayload.ExpiresAt.Time,
+		RefreshToken:          refreshToken,
+		RefreshTokenExpiresAt: refreshPayload.ExpiresAt.Time,
 	}
 	return rsp, nil
 }

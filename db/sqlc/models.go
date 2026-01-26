@@ -33,6 +33,18 @@ type Entry struct {
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
+type Session struct {
+	ID           int64              `json:"id"`
+	PublicID     pgtype.UUID        `json:"public_id"`
+	Username     string             `json:"username"`
+	RefreshToken string             `json:"refresh_token"`
+	UserAgent    string             `json:"user_agent"`
+	ClientIp     string             `json:"client_ip"`
+	IsBlocked    bool               `json:"is_blocked"`
+	ExpiresAt    pgtype.Timestamptz `json:"expires_at"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+}
+
 type Transfer struct {
 	ID            int64              `json:"id"`
 	FromAccountID int64              `json:"from_account_id"`
