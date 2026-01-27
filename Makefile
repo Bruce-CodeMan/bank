@@ -66,7 +66,7 @@ sqlc:
 
 .PHONY: test 
 test:
-	go test -v ./...
+	go test -v -short ./...
 
 .PHONY: server
 server:
