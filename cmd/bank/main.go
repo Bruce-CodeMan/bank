@@ -2,36 +2,63 @@ package main
 
 import (
 	"context"
-	"log"
+	"os"
 
+	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
-	"github.com/BruceCompiler/bank/internal/repository/postgres"
+	db "github.com/BruceCompiler/bank/db/sqlc"
 	"github.com/BruceCompiler/bank/internal/server"
 	"github.com/BruceCompiler/bank/utils"
+	"github.com/BruceCompiler/bank/worker"
 )
 
 func main() {
 
+	log.Logger = log.Output(zerolog.NewConsoleWriter(
+		func(w *zerolog.ConsoleWriter) {
+			w.Out = os.Stderr
+			w.TimeFormat = "2006-01-02 15:04:05"
+			w.NoColor = false
+		},
+	))
+
 	config, err := utils.LoadConfig()
 	if err != nil {
-		log.Fatal("cannot load configuration: ", err)
+		log.Fatal().Err(err).Msg("failed to load configuration")
 	}
 	pool, err := pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
-		log.Fatal("cannot connect db: ", err)
+		log.Fatal().Err(err).Msg("cannot connect db")
 	}
 
-	store := postgres.NewStore(pool)
+	redisOpt := asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 
-	server, err := server.NewHTTPServer(config, store)
+	store := db.NewStore(pool)
+	go runTaskProcessor(redisOpt, store)
+
+	server, err := server.NewHTTPServer(config, store, taskDistributor)
 	if err != nil {
-		log.Fatal("cannot create server: ", err)
+		log.Fatal().Err(err).Msg("cannot create server")
 	}
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {
-		log.Fatal("cannot start server: ", err)
+		log.Fatal().Err(err).Msg("cannot start server")
 	}
 
+}
+
+func runTaskProcessor(redis asynq.RedisClientOpt, store db.Store) {
+	taskProcessor := worker.NewRedisTaskProcessor(redis, store)
+	log.Info().Msg("start task processor")
+	err := taskProcessor.Start()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to start task processor")
+	}
 }

@@ -12,6 +12,7 @@ func RegisterRoutes(router *gin.Engine,
 	ac *AccountController,
 	tc *TransferController,
 	uc *UserController,
+	toc *TokenController,
 ) {
 	api := router.Group("/api/v1")
 	// User
@@ -19,6 +20,12 @@ func RegisterRoutes(router *gin.Engine,
 	{
 		user.POST("", uc.CreateUser)
 		user.POST("/login", uc.Login)
+	}
+
+	// Token
+	token := api.Group("/tokens")
+	{
+		token.POST("/refresh", toc.RenewAccessToken)
 	}
 
 	// Account

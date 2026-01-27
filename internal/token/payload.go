@@ -16,6 +16,7 @@ var (
 
 // Payload contains the payload data of the token
 type Payload struct {
+	ID uuid.UUID `json:"id"`
 	jwt.RegisteredClaims
 	Username string `json:"username"`
 }
@@ -28,6 +29,7 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 	}
 
 	payload := &Payload{
+		ID:       uuid.New(),
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ID:        tokenID.String(),

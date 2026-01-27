@@ -10,17 +10,16 @@ import (
 
 	db "github.com/BruceCompiler/bank/db/sqlc"
 	"github.com/BruceCompiler/bank/internal/dto"
-	"github.com/BruceCompiler/bank/internal/repository/postgres"
 )
 
 // AccountService handles business logic for account operations.
 // It uses the Store to interact with the database.
 type AccountService struct {
-	store postgres.Store
+	store db.Store
 }
 
 // NewAccountService creates a new AccountService with the given store.
-func NewAccountService(s postgres.Store) *AccountService {
+func NewAccountService(s db.Store) *AccountService {
 	return &AccountService{store: s}
 }
 

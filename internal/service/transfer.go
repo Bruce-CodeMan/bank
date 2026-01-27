@@ -7,18 +7,18 @@ import (
 	"database/sql"
 	"errors"
 
+	db "github.com/BruceCompiler/bank/db/sqlc"
 	"github.com/BruceCompiler/bank/internal/dto"
-	"github.com/BruceCompiler/bank/internal/repository/postgres"
 )
 
 // TransferService handles business logic for transfer operations.
 // It uses the store to interact with the database.
 type TransferService struct {
-	store postgres.Store
+	store db.Store
 }
 
 // NewTransferService creates a new TransferService with the given store
-func NewTransferService(s postgres.Store) *TransferService {
+func NewTransferService(s db.Store) *TransferService {
 	return &TransferService{store: s}
 }
 
@@ -31,19 +31,19 @@ func NewTransferService(s postgres.Store) *TransferService {
 // Returns
 //   - postgres.TransferResult: The created transfer
 //   - error: An error if the creation fails
-func (ts *TransferService) CreateTransfer(ctx context.Context, req dto.CreateTransferRequest) (postgres.TransferTxResult, error) {
-	arg := postgres.TransferTxParams{
+func (ts *TransferService) CreateTransfer(ctx context.Context, req dto.CreateTransferRequest) (db.TransferTxResult, error) {
+	arg := db.TransferTxParams{
 		FromAccountID: req.FromAccountID,
 		ToAccountID:   req.ToAccountID,
 		Amount:        req.Amount,
 	}
 	err := ts.validAccount(ctx, req.FromAccountID, req.Currency)
 	if err != nil {
-		return postgres.TransferTxResult{}, err
+		return db.TransferTxResult{}, err
 	}
 	err = ts.validAccount(ctx, req.ToAccountID, req.Currency)
 	if err != nil {
-		return postgres.TransferTxResult{}, err
+		return db.TransferTxResult{}, err
 	}
 
 	return ts.store.TransferTx(ctx, arg)

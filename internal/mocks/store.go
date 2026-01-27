@@ -14,7 +14,6 @@ import (
 	reflect "reflect"
 
 	db "github.com/BruceCompiler/bank/db/sqlc"
-	postgres "github.com/BruceCompiler/bank/internal/repository/postgres"
 	pgtype "github.com/jackc/pgx/v5/pgtype"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -283,10 +282,10 @@ func (mr *MockStoreMockRecorder) ListAccounts(ctx, arg any) *gomock.Call {
 }
 
 // TransferTx mocks base method.
-func (m *MockStore) TransferTx(ctx context.Context, arg postgres.TransferTxParams) (postgres.TransferTxResult, error) {
+func (m *MockStore) TransferTx(ctx context.Context, arg db.TransferTxParams) (db.TransferTxResult, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "TransferTx", ctx, arg)
-	ret0, _ := ret[0].(postgres.TransferTxResult)
+	ret0, _ := ret[0].(db.TransferTxResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

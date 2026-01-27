@@ -52,6 +52,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	rsp := dto.CreateUserResponse{
 		ID:       result.PublicID.String(),
 		Username: result.Username,

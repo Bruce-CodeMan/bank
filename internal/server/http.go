@@ -8,35 +8,38 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 
+	db "github.com/BruceCompiler/bank/db/sqlc"
 	"github.com/BruceCompiler/bank/internal/handler/rest"
-	"github.com/BruceCompiler/bank/internal/repository/postgres"
 	"github.com/BruceCompiler/bank/internal/service"
 	"github.com/BruceCompiler/bank/internal/token"
 	"github.com/BruceCompiler/bank/internal/validators"
 	"github.com/BruceCompiler/bank/utils"
+	"github.com/BruceCompiler/bank/worker"
 )
 
 // HTTPServer encapsulates the HTTP server and its dependencies.
 // It manages the Gin engine and database store.
 type HTTPServer struct {
-	config     utils.Config
-	store      postgres.Store
-	tokenMaker token.Maker
-	engine     *gin.Engine
+	config          utils.Config
+	store           db.Store
+	tokenMaker      token.Maker
+	engine          *gin.Engine
+	taskDistributor worker.TaskDistributor
 }
 
 // NewHTTPServer creates a new HTTPServer with the given store.
 // It initializes the Gin engine and sets up all routes.
-func NewHTTPServer(config utils.Config, store postgres.Store) (*HTTPServer, error) {
+func NewHTTPServer(config utils.Config, store db.Store, taskDistributor worker.TaskDistributor) (*HTTPServer, error) {
 	tokenMaker, err := token.NewJWTMaker(config.TokenSynmmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
 	server := &HTTPServer{
-		config:     config,
-		tokenMaker: tokenMaker,
-		store:      store,
-		engine:     gin.Default(),
+		config:          config,
+		tokenMaker:      tokenMaker,
+		store:           store,
+		engine:          gin.Default(),
+		taskDistributor: taskDistributor,
 	}
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -54,9 +57,10 @@ func (s *HTTPServer) setupRoutes() {
 	accountController := rest.NewAccountController(accountService)
 	transferService := service.NewTransferService(s.store)
 	transferController := rest.NewTransferController(transferService)
-	userService := service.NewUserService(s.store, s.tokenMaker, s.config)
+	userService := service.NewUserService(s.store, s.tokenMaker, s.config, s.taskDistributor)
 	userController := rest.NewUserController(userService)
-	rest.RegisterRoutes(s.engine, s.tokenMaker, accountController, transferController, userController)
+	tokenController := rest.NewTokenController(s.store, s.tokenMaker, s.config)
+	rest.RegisterRoutes(s.engine, s.tokenMaker, accountController, transferController, userController, tokenController)
 }
 
 // Start begins listening for HTTP requests on the specified address.

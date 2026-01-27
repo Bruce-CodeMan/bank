@@ -75,3 +75,7 @@ server:
 .PHONY: mock
 mock:
 	mockgen -destination=internal/mocks/store.go -package=mocks github.com/BruceCompiler/bank/internal/repository/postgres Store
+
+.PHONY: redis
+redis:
+	docker run --name redis -p 6379:6379 -d redis:8-alpine
