@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	db "github.com/BruceCompiler/bank/db/sqlc"
+	"github.com/BruceCompiler/bank/mail"
 )
 
 const (
@@ -23,9 +24,10 @@ type TaskProcessor interface {
 type RedisTaskProcessor struct {
 	server *asynq.Server
 	store  db.Store
+	mailer mail.EmailSender
 }
 
-func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) TaskProcessor {
+func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.EmailSender) TaskProcessor {
 	logger := NewLogger()
 	redis.SetLogger(logger)
 	s := asynq.NewServer(
@@ -46,6 +48,7 @@ func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) TaskPr
 	return &RedisTaskProcessor{
 		server: s,
 		store:  store,
+		mailer: mailer,
 	}
 }
 

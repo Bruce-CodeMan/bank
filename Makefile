@@ -64,7 +64,7 @@ migratedown1:
 sqlc:
 	sqlc generate
 
-.PHONY: test 
+.PHONY: test
 test:
 	go test -v -short ./...
 

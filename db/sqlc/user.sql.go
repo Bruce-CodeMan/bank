@@ -65,7 +65,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 }
 
 const getUserByName = `-- name: GetUserByName :one
-SELECT id, public_id, username, hashed_password, full_name, email, password_changed_at, created_at FROM "user"
+SELECT id, public_id, username, hashed_password, full_name, email, password_changed_at, created_at, is_email_verified FROM "user"
 WHERE username = $1 LIMIT 1
 `
 
@@ -81,12 +81,13 @@ func (q *Queries) GetUserByName(ctx context.Context, username string) (User, err
 		&i.Email,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.IsEmailVerified,
 	)
 	return i, err
 }
 
 const getUserByPublicID = `-- name: GetUserByPublicID :one
-SELECT id, public_id, username, hashed_password, full_name, email, password_changed_at, created_at FROM "user"
+SELECT id, public_id, username, hashed_password, full_name, email, password_changed_at, created_at, is_email_verified FROM "user"
 WHERE public_id = $1 LIMIT 1
 `
 
@@ -102,6 +103,7 @@ func (q *Queries) GetUserByPublicID(ctx context.Context, publicID pgtype.UUID) (
 		&i.Email,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.IsEmailVerified,
 	)
 	return i, err
 }

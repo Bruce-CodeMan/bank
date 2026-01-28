@@ -62,4 +62,15 @@ type User struct {
 	Email             string             `json:"email"`
 	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
 	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	IsEmailVerified   bool               `json:"is_email_verified"`
+}
+
+type VerifyEmail struct {
+	ID           int64              `json:"id"`
+	UserPublicID pgtype.UUID        `json:"user_public_id"`
+	Email        string             `json:"email"`
+	SecretCode   string             `json:"secret_code"`
+	IsUsed       bool               `json:"is_used"`
+	ExpiredAt    pgtype.Timestamptz `json:"expired_at"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
 }

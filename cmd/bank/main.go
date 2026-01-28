@@ -11,6 +11,7 @@ import (
 
 	db "github.com/BruceCompiler/bank/db/sqlc"
 	"github.com/BruceCompiler/bank/internal/server"
+	"github.com/BruceCompiler/bank/mail"
 	"github.com/BruceCompiler/bank/utils"
 	"github.com/BruceCompiler/bank/worker"
 )
@@ -40,7 +41,7 @@ func main() {
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 
 	store := db.NewStore(pool)
-	go runTaskProcessor(redisOpt, store)
+	go runTaskProcessor(config, redisOpt, store)
 
 	server, err := server.NewHTTPServer(config, store, taskDistributor)
 	if err != nil {
@@ -54,8 +55,9 @@ func main() {
 
 }
 
-func runTaskProcessor(redis asynq.RedisClientOpt, store db.Store) {
-	taskProcessor := worker.NewRedisTaskProcessor(redis, store)
+func runTaskProcessor(config utils.Config, redis asynq.RedisClientOpt, store db.Store) {
+	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
+	taskProcessor := worker.NewRedisTaskProcessor(redis, store, mailer)
 	log.Info().Msg("start task processor")
 	err := taskProcessor.Start()
 	if err != nil {
